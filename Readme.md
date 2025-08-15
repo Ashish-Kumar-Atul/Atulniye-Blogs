@@ -88,12 +88,19 @@ Atulniye Blogs Backend/
 - Accessible color palette
 
 ## 📸 Screenshots
+## Home
 ![Profile Page](client/src/public/screenshots/HomeSignOut.png)
+## All Post
 ![Profile Page](client/src/public/screenshots/AllPost.png)
+## Create Post
 ![Profile Page](client/src/public/screenshots/CreatePost.png)
+## My Post
 ![Profile Page](client/src/public/screenshots/MyPost.png)
-![Profile Page](client/src/public/screenshots/CreateAccount.png)
+## Create Account
 ![Profile Page](client/src/public/screenshots/Signin.png)
+## Sign-in
+![Profile Page](client/src/public/screenshots/CreateAccount.png)
+## My Profile
 ![Profile Page](client/src/public/screenshots/MyProfile.png)
 
 ## 🙌 Contributing

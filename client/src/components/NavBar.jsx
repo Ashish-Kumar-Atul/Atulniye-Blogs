@@ -28,7 +28,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/auth/status',{withCredentials:true})
+    axios.get('https://atulniye-blogs.onrender.com/api/auth/status',{withCredentials:true})
     .then(res => {
       // If we get a user object, that means we're logged in
       setIsLoggedIn(!!res.data.user)

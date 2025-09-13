@@ -1,43 +1,67 @@
-const express = require('express');
-const cors = require('cors');
-const session = require('express-session');
-const mongoose = require('mongoose');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const session = require("express-session");
+const mongoose = require("mongoose");
+const path = require("path");
+require("dotenv").config();
 
-const blogRoutes = require('./routes/blogRoutes.js');
-const authRoutes = require('./routes/authRoutes.js');
+const blogRoutes = require("./routes/blogRoutes.js");
+const authRoutes = require("./routes/authRoutes.js");
 
 const app = express();
 
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'], 
-  credentials: true,              
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
-}));
+// CORS setup (allow frontend during development + production)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local frontend
+      "http://localhost:5174", // maybe another frontend port
+      process.env.CLIENT_URL    // deployed frontend (Netlify/Vercel etc.)
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use(express.json());
 
-app.use(session({
-  secret: 'your-secret-key', 
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, 
-    httpOnly: true,
-    sameSite: 'lax'   
-  }
-}));
+// Session setup
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // true in prod (https)
+      httpOnly: true,
+      sameSite: "lax",
+    },
+  })
+);
 
-//Routes
+// API Routes
 app.use("/api/blog", blogRoutes);
 app.use("/api/auth", authRoutes);
 
-//MongoDB and start server
-mongoose.connect(process.env.DB_URI).then(() => {
-  const PORT = 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
+// ✅ Serve frontend (React build) in production
+if (process.env.NODE_ENV === "production") {
+  const __dirname1 = path.resolve();
+  app.use(express.static(path.join(__dirname1, "/client/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname1, "client", "build", "index.html"));
   });
-}).catch(err => {
-  console.error("MongoDB connection error:", err.message);
-});
+}
+
+// MongoDB + Start server
+mongoose
+  .connect(process.env.DB_URI)
+  .then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () =>
+      console.log(`✅ Server running on http://localhost:${PORT}`)
+    );
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+  });

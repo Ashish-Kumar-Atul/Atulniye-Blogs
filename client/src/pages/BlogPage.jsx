@@ -14,7 +14,7 @@ export default function BlogPage() {
     useEffect(() => {
         const fetchBlogData = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/api/blog/blog/${id}`,{
+                const res = await fetch(`https://atulniye-blogs.onrender.com//api/blog/blog/${id}`,{
                     credentials:'include'
                 });
                 const data = await res.json();
@@ -67,7 +67,7 @@ export default function BlogPage() {
           <div className="aspect-video rounded-xl overflow-hidden mb-8 shadow-lg">
             <img 
               // Change thumbnail src to:
-                src={`http://localhost:3000/api/blog/thumbnail/${id}`}
+                src={`https://atulniye-blogs.onrender.com//api/blog/thumbnail/${id}`}
                 alt={blogData.title}
                 className="w-full h-full object-cover" 
             />

@@ -12,7 +12,7 @@ export default function MyProfile() {
   useEffect(() => {
     const fetchBlogData = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/auth/status`,{
+            const response = await fetch(`https://atulniye-blogs.onrender.com//api/auth/status`,{
                 credentials:'include'
             });
             const data = await response.json();
@@ -40,7 +40,7 @@ export default function MyProfile() {
             {/* Avatar */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6 -mt-16 mb-6">
               <img
-                src={userData?.user?._id ? `http://localhost:3000/api/auth/profile-photo/${userData.user._id}` : `https://ui-avatars.com/api/?name=${userData?.user?.fullName || userData?.user?.username || 'User'}&background=6366f1&color=ffffff&size=128`}
+                src={userData?.user?._id ? `https://atulniye-blogs.onrender.com//api/auth/profile-photo/${userData.user._id}` : `https://ui-avatars.com/api/?name=${userData?.user?.fullName || userData?.user?.username || 'User'}&background=6366f1&color=ffffff&size=128`}
                 alt={userData?.user?.fullName || userData?.user?.username}
                 className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 object-cover shadow-lg"
                 onError={(e) => {

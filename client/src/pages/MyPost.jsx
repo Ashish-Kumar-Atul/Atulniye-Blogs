@@ -11,11 +11,20 @@ function MyPost() {
   const navigate = useNavigate();
 
   useEffect(()=>{
+    const API_URL_LOCAL = 'http://localhost:3000';
+    const API_URL_PROD = 'https://atulniye-blogs.onrender.com';
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('https://atulniye-blogs.onrender.com//api/blog/user-blogs', {
-          withCredentials: true
-        })
+        let response;
+        try {
+          response = await axios.get(`${API_URL_LOCAL}/api/blog/user-blogs`, {
+            withCredentials: true
+          });
+        } catch (err) {
+          response = await axios.get(`${API_URL_PROD}/api/blog/user-blogs`, {
+            withCredentials: true
+          });
+        }
         setBlog(response.data.data);
         setLoading(false)
       } catch (error) {
@@ -27,10 +36,19 @@ function MyPost() {
   },[])
 
   const toggleDelete = async (id) => {
+    const API_URL_LOCAL = 'http://localhost:3000';
+    const API_URL_PROD = 'https://atulniye-blogs.onrender.com';
     try {
-      await axios.delete(`https://atulniye-blogs.onrender.com//api/blog/blog/${id}`, {
-        withCredentials: true
-      });
+      let res;
+      try {
+        res = await axios.delete(`${API_URL_LOCAL}/api/blog/blog/${id}`, {
+          withCredentials: true
+        });
+      } catch (err) {
+        res = await axios.delete(`${API_URL_PROD}/api/blog/blog/${id}`, {
+          withCredentials: true
+        });
+      }
       setBlog(prev => prev.filter(blog => blog._id !== id));
     } catch (error) {
       console.error("Failed to delete blog", error);
@@ -165,7 +183,7 @@ function MyPost() {
                 title={singleBlog.title}
                 description={singleBlog.description}
                 author={singleBlog.author}
-                thumbnail={singleBlog.thumbnail ? `https://atulniye-blogs.onrender.com//api/blog/thumbnail/${singleBlog._id}` : null}
+                thumbnail={singleBlog.thumbnail ? `https://atulniye-blogs.onrender.com/api/blog/thumbnail/${singleBlog._id}` : null}
                 showActions={true}
                 onDelete={toggleDelete}
                 onEdit={toggleEdit}

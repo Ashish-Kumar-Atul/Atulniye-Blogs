@@ -46,11 +46,11 @@ app.use("/api/auth", authRoutes);
 // ✅ Serve frontend in production (Express 5 compatible)
 if (process.env.NODE_ENV === "production") {
   const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1, "/client/dist"))); // or "build" if CRA
+  app.use(express.static(path.join(__dirname1, "client", "dist"))); // or "build" for CRA
 
-  // Express 5 compatible catch-all route
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(__dirname1, "client", "dist", "index.html")); // or "build" if CRA
+  // SPA fallback
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname1, "client", "dist", "index.html")); // or "build"
   });
 }
 

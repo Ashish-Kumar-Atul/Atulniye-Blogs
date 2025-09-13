@@ -39,9 +39,10 @@ app.use(
         ? MongoStore.create({ mongoUrl: process.env.DB_URI })
         : undefined,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      // For cross-origin cookies in production, must be 'none' and secure
+      secure: process.env.NODE_ENV === "production", // true for HTTPS
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );

@@ -43,7 +43,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('https://atulniye-blogs.onrender.com//api/auth/logout',{},{withCredentials:true});
+      await axios.post('https://atulniye-blogs.onrender.com/api/auth/logout',{},{withCredentials:true});
       setIsLoggedIn(false);
       setUser(null);
       setIsDropdownOpen(false);

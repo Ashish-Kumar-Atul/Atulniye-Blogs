@@ -50,15 +50,26 @@ router.post('/login', async (req, res) => {
 
 //If logged in or not
 router.get('/status', async (req,res) => {
+    console.log('Auth status check - Session:', req.session);
+    console.log('Auth status check - Session ID:', req.sessionID);
+    console.log('Auth status check - User ID:', req.session.userId);
+    
     if(req.session.userId){
         try {
             const user = await User.findById(req.session.userId).select('-password');
-            res.status(200).json({user: user})
+            if(user) {
+                res.status(200).json({user: user});
+            } else {
+                // User was deleted but session still exists
+                req.session.destroy();
+                res.status(401).json({message:'User not found'});
+            }
         } catch (error) {
-            res.status(401).json({message:'Not authenticated'})
+            console.error('Auth status error:', error);
+            res.status(401).json({message:'Not authenticated'});
         }
     } else {
-        res.status(401).json({message:'Not authenticated'})
+        res.status(401).json({message:'Not authenticated'});
     }
 })
 
@@ -164,7 +175,7 @@ router.post('/logout', (req, res) => {
     if (err) {
       return res.status(500).json({ message: 'Could not log out' });
     }
-    res.clearCookie('connect.sid');
+    res.clearCookie('sessionId'); // Use the custom session name
     res.json({ message: 'Logged out successfully' });
   });
 });

@@ -19,10 +19,13 @@ app.use(
   cors({
     origin: [
       process.env.CLIENT_URL, // frontend deployed URL
+      "https://atulniye-blogs.onrender.com", // Add the actual frontend URL
       "http://localhost:5173",
       "http://localhost:5174",
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 
@@ -36,14 +39,19 @@ app.use(
     saveUninitialized: false,
     store:
       process.env.NODE_ENV === "production"
-        ? MongoStore.create({ mongoUrl: process.env.DB_URI })
+        ? MongoStore.create({ 
+            mongoUrl: process.env.DB_URI,
+            touchAfter: 24 * 3600 // lazy session update
+          })
         : undefined,
     cookie: {
       // For cross-origin cookies in production, must be 'none' and secure
       secure: process.env.NODE_ENV === "production", // true for HTTPS
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
+    name: 'sessionId', // Custom session name
   })
 );
 

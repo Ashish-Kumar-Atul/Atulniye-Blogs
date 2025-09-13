@@ -44,12 +44,13 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/auth", authRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1, "client", "dist"))); // Vite build folder
+  const __dirname1 = path.resolve(); // points to /server
+  const clientBuildPath = path.join(__dirname1, "..", "client", "dist"); // go up one level
 
-  // SPA fallback
-  app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname1, "client", "dist", "index.html"));
+  app.use(express.static(clientBuildPath));
+
+  app.use((req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function useAuth(){
     const [loading, setLoading] = useState(true);
@@ -7,7 +8,7 @@ export default function useAuth(){
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/auth/status',{withCredentials: true})
+    axios.get(`${API_URL}/api/auth/status`,{withCredentials: true})
         .then(res => {
             setAuthenticated(true);
             setUser(res.data.user);

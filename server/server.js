@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const path = require("path");
 require("dotenv").config();
 
-// Use connect-mongo for production-safe sessions
+// Only install this if you want production-safe sessions
+// npm install connect-mongo
 const MongoStore = require("connect-mongo");
 
 const blogRoutes = require("./routes/blogRoutes.js");
@@ -13,22 +14,21 @@ const authRoutes = require("./routes/authRoutes.js");
 
 const app = express();
 
-// CORS setup (allow frontend during development + production)
+// CORS setup
 app.use(
   cors({
     origin: [
+      process.env.CLIENT_URL, // frontend deployed URL
       "http://localhost:5173",
       "http://localhost:5174",
-      process.env.CLIENT_URL, // deployed frontend
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
 app.use(express.json());
 
-// Session setup with MongoStore for production
+// Session setup
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
@@ -37,7 +37,7 @@ app.use(
     store:
       process.env.NODE_ENV === "production"
         ? MongoStore.create({ mongoUrl: process.env.DB_URI })
-        : undefined, // MemoryStore for dev
+        : undefined,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
@@ -46,23 +46,21 @@ app.use(
   })
 );
 
-// API Routes
+// API routes
 app.use("/api/blog", blogRoutes);
 app.use("/api/auth", authRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  // __dirname points to /server
-  const clientBuildPath = path.join(__dirname, "..", "client", "dist"); // Vite build folder
+  const clientBuildPath = path.join(__dirname, "..", "client", "dist");
   app.use(express.static(clientBuildPath));
 
-  // SPA fallback (catch-all)
   app.use((req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 }
 
-// Connect MongoDB + Start server
+// Connect to MongoDB + start server
 mongoose
   .connect(process.env.DB_URI)
   .then(() => {
@@ -71,6 +69,4 @@ mongoose
       console.log(`✅ Server running on http://localhost:${PORT}`)
     );
   })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
-  });
+  .catch((err) => console.error("❌ MongoDB connection error:", err));

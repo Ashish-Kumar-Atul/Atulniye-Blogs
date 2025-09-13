@@ -28,10 +28,10 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
-    const cleanAPIUrl = API_URL.replace(/\/$/, '');
+    // In production, use relative paths since frontend and backend are served from same domain
+    const API_URL = import.meta.env.VITE_API_URL || "/api";
     
-    axios.get(`${cleanAPIUrl}/api/auth/status`, {withCredentials: true})
+    axios.get(`${API_URL}/auth/status`, {withCredentials: true})
     .then(res => {
       // If we get a user object, that means we're logged in
       setIsLoggedIn(!!res.data.user)
@@ -46,10 +46,10 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
-      const cleanAPIUrl = API_URL.replace(/\/$/, '');
+      // In production, use relative paths since frontend and backend are served from same domain
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
       
-      await axios.post(`${cleanAPIUrl}/api/auth/logout`, {}, {withCredentials: true});
+      await axios.post(`${API_URL}/auth/logout`, {}, {withCredentials: true});
       setIsLoggedIn(false);
       setUser(null);
       setIsDropdownOpen(false);

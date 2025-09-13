@@ -28,10 +28,10 @@ export default function Login() {
     setError('');
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
-      const cleanAPIUrl = API_URL.replace(/\/$/, '');
+      // In production, use relative paths since frontend and backend are served from same domain
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
       
-      const res = await axios.post(`${cleanAPIUrl}/api/auth/login`, {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email: formData.email,
         password: formData.password
       }, {

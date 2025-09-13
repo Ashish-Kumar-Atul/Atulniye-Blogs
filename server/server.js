@@ -42,16 +42,18 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// Add middleware to log request headers for debugging
-app.use((req, res, next) => {
-  if (req.path === '/api/auth/status') {
-    console.log('=== Auth Status Request ===');
-    console.log('Headers:', req.headers);
-    console.log('Cookies:', req.headers.cookie);
-    console.log('Session ID from cookie:', req.sessionID);
-  }
-  next();
-});
+// Add middleware to log request headers for debugging (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    if (req.path === '/api/auth/status') {
+      console.log('=== Auth Status Request ===');
+      console.log('Headers:', req.headers);
+      console.log('Cookies:', req.headers.cookie);
+      console.log('Session ID from cookie:', req.sessionID);
+    }
+    next();
+  });
+}
 
 // Session setup
 const sessionConfig = {
@@ -59,10 +61,10 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: false,
   cookie: {
-    // For cross-origin cookies in production, must be 'none' and secure
-    secure: process.env.NODE_ENV === "production", // true for HTTPS
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    // Simplified cookie settings for better cross-origin support
+    secure: false, // Set to false for now to test
+    httpOnly: false, // Set to false for debugging
+    sameSite: 'lax', // Use lax instead of none
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   },
   name: 'sessionId', // Custom session name

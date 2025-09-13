@@ -7,11 +7,10 @@ export default function useAuth(){
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
-        // Remove trailing slash if present to avoid double slashes
-        const cleanAPIUrl = API_URL.replace(/\/$/, '');
+        // In production, use relative paths since frontend and backend are served from same domain
+        const API_URL = import.meta.env.VITE_API_URL || "/api";
         
-        axios.get(`${cleanAPIUrl}/api/auth/status`, {withCredentials: true})
+        axios.get(`${API_URL}/auth/status`, {withCredentials: true})
         .then(res => {
             setAuthenticated(true);
             setUser(res.data.user);

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com/";
 
 export default function useAuth(){
     const [loading, setLoading] = useState(true);
@@ -8,18 +7,24 @@ export default function useAuth(){
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-    axios.get(`${API_URL}/api/auth/status`,{withCredentials: true})
+        const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
+        // Remove trailing slash if present to avoid double slashes
+        const cleanAPIUrl = API_URL.replace(/\/$/, '');
+        
+        axios.get(`${cleanAPIUrl}/api/auth/status`, {withCredentials: true})
         .then(res => {
             setAuthenticated(true);
             setUser(res.data.user);
         })
-        .catch(() => {
+        .catch((error) => {
+            console.log('Auth check failed:', error);
             setAuthenticated(false);
             setUser(null);
         })
-        .finally(()=>{
+        .finally(() => {
             setLoading(false);
         })
-    },[]);
+    }, []);
+    
     return { authenticated, user, loading }
 }

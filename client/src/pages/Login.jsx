@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink,useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,33 +23,32 @@ export default function Login() {
 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  try {
-    const res = await fetch('https://atulniye-blogs.onrender.com/api/auth/login',{
-      method:'POST',
-      credentials:'include',
-      headers:{
-        'Content-Type': 'application/json',
-      },
-      body :JSON.stringify({
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
+      const cleanAPIUrl = API_URL.replace(/\/$/, '');
+      
+      const res = await axios.post(`${cleanAPIUrl}/api/auth/login`, {
         email: formData.email,
         password: formData.password
-      }),
-    });
+      }, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
 
-    const data = await res.json();
-
-    if(!res.ok){
-      throw new Error(data.message || 'Login Failed')
+      setError('');
+      navigate('/');
+    } catch (error) {
+      setError(error.response?.data?.message || error.message || 'Login Failed');
+    } finally {
+      setLoading(false);
     }
-
-    setError('')
-    navigate('/')
-  } catch (error) {
-    setError(error.message);
-  }
-};
+  };
   
 
 

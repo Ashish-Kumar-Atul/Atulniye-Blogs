@@ -48,14 +48,40 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Test endpoint to check if cookies are working
+router.get('/test-cookie', (req, res) => {
+    console.log('=== Cookie Test ===');
+    console.log('Session ID:', req.sessionID);
+    console.log('Cookies:', req.headers.cookie);
+    console.log('Session:', req.session);
+    
+    // Set a test value in session
+    req.session.testValue = 'Hello from server';
+    
+    res.json({
+        message: 'Cookie test endpoint',
+        sessionId: req.sessionID,
+        cookies: req.headers.cookie,
+        testValue: req.session.testValue
+    });
+});
+
 //If logged in or not
 router.get('/status', async (req,res) => {
+    console.log('=== Auth Status Endpoint ===');
+    console.log('Session ID:', req.sessionID);
+    console.log('Session:', req.session);
+    console.log('User ID in session:', req.session.userId);
+    console.log('Cookies sent:', req.headers.cookie);
+    
     if(req.session.userId){
         try {
             const user = await User.findById(req.session.userId).select('-password');
             if(user) {
+                console.log('User found:', user.username);
                 res.status(200).json({user: user});
             } else {
+                console.log('User not found in database, destroying session');
                 // User was deleted but session still exists
                 req.session.destroy();
                 res.status(401).json({message:'User not found'});
@@ -65,6 +91,7 @@ router.get('/status', async (req,res) => {
             res.status(401).json({message:'Not authenticated'});
         }
     } else {
+        console.log('No user ID in session');
         res.status(401).json({message:'Not authenticated'});
     }
 })

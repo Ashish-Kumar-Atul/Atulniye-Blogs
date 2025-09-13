@@ -28,7 +28,10 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    axios.get('https://atulniye-blogs.onrender.com/api/auth/status',{withCredentials:true})
+    const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
+    const cleanAPIUrl = API_URL.replace(/\/$/, '');
+    
+    axios.get(`${cleanAPIUrl}/api/auth/status`, {withCredentials: true})
     .then(res => {
       // If we get a user object, that means we're logged in
       setIsLoggedIn(!!res.data.user)
@@ -43,14 +46,16 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('https://atulniye-blogs.onrender.com/api/auth/logout',{},{withCredentials:true});
+      const API_URL = import.meta.env.VITE_API_URL || "https://atulniye-blogs.onrender.com";
+      const cleanAPIUrl = API_URL.replace(/\/$/, '');
+      
+      await axios.post(`${cleanAPIUrl}/api/auth/logout`, {}, {withCredentials: true});
       setIsLoggedIn(false);
       setUser(null);
       setIsDropdownOpen(false);
       navigate('/')
     } catch (error) {
-      console.log('Logout failed',error);
-      
+      console.log('Logout failed', error);
     }
   }
 

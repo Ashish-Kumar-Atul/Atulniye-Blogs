@@ -1,0 +1,172 @@
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const router = express.Router();
+const User = require('../models/user.model');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+
+// Register
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    const exists = await User.findOne({ username });
+    if (exists) return res.status(409).json({ message: 'User already exists' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({ username, email, password: hashedPassword });
+
+    req.session.userId = user._id;
+
+    res.status(201).json({ message: 'Registered successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Registration failed', error: error.message });
+  }
+});
+
+
+// Login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: 'User not found' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+
+    req.session.userId = user._id;
+    user.loggedInBefore = true;
+    await user.save();
+
+    res.json({ message: 'Login successful', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Login failed', error: error.message });
+  }
+});
+
+//If logged in or not
+router.get('/status', async (req,res) => {
+    if(req.session.userId){
+        try {
+            const user = await User.findById(req.session.userId).select('-password');
+            res.status(200).json({user: user})
+        } catch (error) {
+            res.status(401).json({message:'Not authenticated'})
+        }
+    } else {
+        res.status(401).json({message:'Not authenticated'})
+    }
+})
+
+//Update profile
+router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => {
+  try {
+    // Check if user is authenticated
+    if (!req.session.userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const {
+      username,
+      fullName,
+      email,
+      phone,
+      website,
+      bio,
+      twitter,
+      linkedin,
+      github,
+      instagram
+    } = req.body;
+
+
+    const currentUser = await User.findById(req.session.userId);
+    if(!currentUser){
+      return res.status(404).json({message:'User not found'});
+    }
+
+    if(username && username !== currentUser.username){
+      const existingUser = await User.findOne({username,_id: {$ne:req.session.userId} });
+
+      if(existingUser){
+        return res.status(409).json({message: 'Username Already Taken'});
+      }
+    }
+    
+    if(email && email !== currentUser.email){
+      const existingEmail = await User.findOne({email,_id: {$ne:req.session.userId} });
+
+      if(existingEmail){
+        return res.status(409).json({message: 'Email Already Taken'});
+      }
+    }
+
+    const updateData = {};
+
+    if(req.file) {
+        updateData.profilePhoto = {
+            data: req.file.buffer,
+            contentType: req.file.mimetype
+        };
+    }
+    if(username) updateData.username = username;
+    if(fullName) updateData.fullName = fullName;
+    if(email) updateData.email = email;
+    if(phone) updateData.phone = phone;
+    if(website) updateData.website = website;
+    if(bio) updateData.bio = bio;
+    if(twitter) updateData.twitter = twitter;
+    if(linkedin) updateData.linkedin = linkedin;
+    if(github) updateData.github = github;
+    if(instagram) updateData.instagram = instagram;
+
+
+    const updateUser = await User.findByIdAndUpdate(
+      req.session.userId,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password')
+
+    res.status(200).json({
+      message: 'Profile Updated Successfully',
+      user: updateUser
+    });
+
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Failed to update profile', 
+      error: error.message 
+    });
+  }
+})
+
+router.get('/profile-photo/:userId',async (req,res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user || !user.profilePhoto || !user.profilePhoto.data){
+      return res.status(404).json({message:'Profile Photo Not Found'});
+    }
+    res.set('Content-Type', user.profilePhoto.contentType);
+    res.send(user.profilePhoto.data);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching profile photo' });
+  }
+})
+
+
+// Logout
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Could not log out' });
+    }
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logged out successfully' });
+  });
+});
+
+module.exports = router;

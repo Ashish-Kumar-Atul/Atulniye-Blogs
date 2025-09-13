@@ -1,0 +1,20 @@
+# MacOS
+.DS_Store
+
+# Environment variables
+.env
+
+# Sensitive cookies or tokens
+cookies.txt
+
+# Dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Build output
+dist/
+build/

@@ -15,19 +15,30 @@ const authRoutes = require("./routes/authRoutes.js");
 const app = express();
 
 // CORS setup
-app.use(
-  cors({
-    origin: [
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
       process.env.CLIENT_URL, // frontend deployed URL
-      "https://atulniye-blogs.onrender.com", // Add the actual frontend URL
+      "https://atulniye-blogs.onrender.com", // Same domain (for when serving frontend from backend)
       "http://localhost:5173",
       "http://localhost:5174",
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  })
-);
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

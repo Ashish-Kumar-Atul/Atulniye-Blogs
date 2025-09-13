@@ -50,10 +50,6 @@ router.post('/login', async (req, res) => {
 
 //If logged in or not
 router.get('/status', async (req,res) => {
-    console.log('Auth status check - Session:', req.session);
-    console.log('Auth status check - Session ID:', req.sessionID);
-    console.log('Auth status check - User ID:', req.session.userId);
-    
     if(req.session.userId){
         try {
             const user = await User.findById(req.session.userId).select('-password');

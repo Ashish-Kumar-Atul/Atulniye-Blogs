@@ -43,14 +43,13 @@ app.use(
 app.use("/api/blog", blogRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Serve frontend in production (Express 5 compatible)
 if (process.env.NODE_ENV === "production") {
   const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1, "client", "dist"))); // or "build" for CRA
+  app.use(express.static(path.join(__dirname1, "client", "dist"))); // Vite build folder
 
   // SPA fallback
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname1, "client", "dist", "index.html")); // or "build"
+  app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname1, "client", "dist", "index.html"));
   });
 }
 

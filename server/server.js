@@ -10,7 +10,7 @@ const authRoutes = require('./routes/authRoutes.js');
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174','https://atulniye-blogs.onrender.com/'], 
+  origin: ['http://localhost:5173', 'http://localhost:5174','https://atulniye-blogs.onrender.com'], 
   credentials: true,              
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
@@ -18,13 +18,13 @@ app.use(cors({
 app.use(express.json());
 
 app.use(session({
-  secret: 'your-secret-key', 
+  secret: 'process.env.SESSION_SECRET', 
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, 
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'lax'   
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   }
 }));
 
@@ -34,7 +34,7 @@ app.use("/api/auth", authRoutes);
 
 //MongoDB and start server
 mongoose.connect(process.env.DB_URI).then(() => {
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on address http://localhost:${PORT}`);
   });

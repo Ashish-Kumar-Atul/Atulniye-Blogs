@@ -9,22 +9,28 @@ const authRoutes = require('./routes/authRoutes.js');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(cors({
-  origin: ['https://clever-crumble-50aae3.netlify.app','http://localhost:5173', 'http://localhost:5174'], 
-  credentials: true,              
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  origin: [
+    'https://clever-crumble-50aae3.netlify.app',
+    'http://localhost:5173',
+    'http://localhost:5174'
+  ],
+  credentials: true,
+  methods: ['GET','POST','PUT','DELETE']
 }));
 
 app.use(express.json());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET, 
+  secret: process.env.SESSION_SECRET || 'dev-fallback',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    httpOnly: true
   }
 }));
 

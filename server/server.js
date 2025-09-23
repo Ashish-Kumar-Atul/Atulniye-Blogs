@@ -13,7 +13,7 @@ app.set('trust proxy', 1);
 
 app.use(cors({
   origin: [
-    'https://clever-crumble-50aae3.netlify.app',
+    'https://rainbow-twilight-241658.netlify.app/',
     'http://localhost:5173',
     'http://localhost:5174'
   ],

@@ -7,7 +7,7 @@ export default function useAuth(){
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/auth/status',{withCredentials: true})
+        axios.get('https://atulniye-blogs.onrender.com/api/auth/status',{withCredentials: true})
         .then(res => {
             setAuthenticated(true);
             setUser(res.data.user);

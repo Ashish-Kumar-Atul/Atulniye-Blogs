@@ -28,7 +28,7 @@ export default function GetStarted() {
     if(formData.password !== formData.confirmPassword) return setError("Password do not match");
 
     try {
-      const res = await fetch ('http://localhost:3000/api/auth/register',{
+      const res = await fetch ('https://atulniye-blogs.onrender.com/api/auth/register',{
         method:'POST',
         credentials:'include',
         headers:{'Content-Type': 'application/json'},

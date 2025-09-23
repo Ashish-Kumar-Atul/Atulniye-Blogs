@@ -12,7 +12,7 @@ export default function MyProfile() {
   useEffect(() => {
     const fetchBlogData = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/auth/status`,{
+            const response = await fetch(`https://atulniye-blogs.onrender.com/api/auth/status`,{
                 credentials:'include'
             });
             const data = await response.json();

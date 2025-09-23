@@ -19,7 +19,7 @@ export default function CreateBlog() {
   // Load blog data if in edit mode
   useEffect(() => {
     if (isEditing) {
-      axios.get(`http://localhost:3000/api/blog/blog/${id}`, {
+      axios.get(`https://atulniye-blogs.onrender.com/api/blog/blog/${id}`, {
         withCredentials: true
       })
         .then(res => {
@@ -30,7 +30,7 @@ export default function CreateBlog() {
           });
           // Set thumbnail preview if editing and image exists
           if (res.data.thumbnail) {
-            setThumbnailPreview(`http://localhost:3000/api/blog/thumbnail/${id}`);
+            setThumbnailPreview(`https://atulniye-blogs.onrender.com/api/blog/thumbnail/${id}`);
           }
         })
         .catch(err => {
@@ -106,9 +106,9 @@ export default function CreateBlog() {
       };
 
       if (isEditing) {
-        await axios.put(`http://localhost:3000/api/blog/edit/${id}`, data, config);
+        await axios.put(`https://atulniye-blogs.onrender.com/api/blog/edit/${id}`, data, config);
       } else {
-        await axios.post('http://localhost:3000/api/blog/create-blogs', data, config);
+        await axios.post('https://atulniye-blogs.onrender.com/api/blog/create-blogs', data, config);
       }
 
       navigate("/my-posts");

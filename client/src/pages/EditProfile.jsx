@@ -56,7 +56,7 @@ function EditProfile() {
             formDataToSend.append('profilePhoto', profilePhoto);
         }
         try {
-            const res = await fetch('http://localhost:3000/api/auth/update-profile',{
+            const res = await fetch('https://atulniye-blogs.onrender.com/api/auth/update-profile',{
                 method:'POST',
                 credentials:'include',
                 body: formDataToSend
@@ -77,7 +77,7 @@ function EditProfile() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/auth/status`,{credentials:'include'})
+                const response = await fetch(`https://atulniye-blogs.onrender.com/api/auth/status`,{credentials:'include'})
                 const data = await response.json();
                 
                 if (response.ok && data.user) {

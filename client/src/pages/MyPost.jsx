@@ -13,7 +13,7 @@ function MyPost() {
   useEffect(()=>{
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/blog/user-blogs', {
+        const response = await axios.get('https://atulniye-blogs.onrender.com/api/blog/user-blogs', {
           withCredentials: true
         })
         setBlog(response.data.data);
@@ -28,7 +28,7 @@ function MyPost() {
 
   const toggleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/blog/blog/${id}`, {
+      await axios.delete(`https://atulniye-blogs.onrender.com/api/blog/blog/${id}`, {
         withCredentials: true
       });
       setBlog(prev => prev.filter(blog => blog._id !== id));
@@ -40,7 +40,7 @@ function MyPost() {
   const toggleEdit = async (id) => {
     try {
       navigate(`/edit/${id}`)
-      // await axios.put(`http://localhost:3000/blog/${id}`);
+      // await axios.put(`https://atulniye-blogs.onrender.com/blog/${id}`);
     } catch (error) {
       console.error("Failed to edit blog", error);
     }

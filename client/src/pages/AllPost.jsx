@@ -11,7 +11,7 @@ function AllPost() {
   useEffect(()=>{
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/blog/get-all-blogs', {
+        const response = await axios.get('https://atulniye-blogs.onrender.com/api/blog/get-all-blogs', {
           withCredentials: true
         })
         setBlog(response.data.data);

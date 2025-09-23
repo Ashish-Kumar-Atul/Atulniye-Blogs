@@ -20,7 +20,7 @@ export default function EditBlog() {
   useEffect(() => {
     const fetchBlogData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/blog/blog/${id}`, {
+        const response = await axios.get(`https://atulniye-blogs.onrender.com/api/blog/blog/${id}`, {
           withCredentials: true
         });
         setFormData({
@@ -52,7 +52,7 @@ export default function EditBlog() {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:3000/api/blog/edit/${id}`, formData, {
+      const response = await axios.put(`https://atulniye-blogs.onrender.com/api/blog/edit/${id}`, formData, {
         withCredentials: true
       });
       setStatus('✅ Blog updated successfully!');

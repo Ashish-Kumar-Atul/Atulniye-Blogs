@@ -155,7 +155,7 @@ export default function Navbar() {
                 >
                   {user?.profilePhoto ? (
                     <img
-                      src={`https://atulniye-blogs.onrender.com/auth/profile-photo/${user._id}`}
+                      src={`https://atulniye-blogs.onrender.com/api/auth/profile-photo/${user._id}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover border"
                       onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}

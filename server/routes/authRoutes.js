@@ -7,44 +7,94 @@ const storage = multer.memoryStorage();
 const upload = multer({storage});
 
 // Register
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    // Check if username already exists
     const exists = await User.findOne({ username });
-    if (exists) return res.status(409).json({ message: 'User already exists' });
+    if (exists) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ username, email, password: hashedPassword });
+    // Create the user in DB
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      // profilePhoto: optional, set a default if needed
+    });
 
-    req.session.userId = user._id;
+    // Create a safe session object
+    const sessionUser = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePhoto: user.profilePhoto || null, // include profile photo
+    };
 
-    res.status(201).json({ message: 'Registered successfully', user });
+    // Store in session
+    req.session.user = sessionUser;
+
+    res.status(201).json({
+      message: "Registered successfully",
+      user: sessionUser,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Registration failed', error: error.message });
+    console.error("Registration error:", error);
+    res.status(500).json({
+      message: "Registration failed",
+      error: error.message,
+    });
   }
 });
 
-
 // Login
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Check if user exists
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
 
+    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect password" });
+    }
 
-    req.session.userId = user._id;
+    // Create a safe session object
+    const sessionUser = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      fullName: user.fullName || null,
+      profilePhoto: user.profilePhoto || null,
+    };
+
+    // Save session
+    req.session.user = sessionUser;
+
+    // Update "loggedInBefore" flag
     user.loggedInBefore = true;
     await user.save();
 
-    res.json({ message: 'Login successful', user });
+    res.json({
+      message: "Login successful",
+      user: sessionUser,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Login failed', error: error.message });
+    console.error("Login error:", error);
+    res.status(500).json({
+      message: "Login failed",
+      error: error.message,
+    });
   }
 });
 

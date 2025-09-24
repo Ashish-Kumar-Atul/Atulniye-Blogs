@@ -56,11 +56,11 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Validate password
@@ -69,13 +69,14 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    // Create a safe session object
+    // --- CRITICAL PART ---
+    // Create a user object for the session (exclude password)
     const sessionUser = {
       _id: user._id,
       username: user.username,
       email: user.email,
-      fullName: user.fullName || null,
-      profilePhoto: user.profilePhoto || null,
+      fullName: user.fullName,
+      profilePhoto: user.profilePhoto
     };
 
     // Save session
@@ -85,6 +86,7 @@ router.post("/login", async (req, res) => {
     user.loggedInBefore = true;
     await user.save();
 
+    // Send back response
     res.json({
       message: "Login successful",
       user: sessionUser,

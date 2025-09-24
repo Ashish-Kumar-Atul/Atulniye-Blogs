@@ -69,7 +69,6 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    // --- CRITICAL PART ---
     // Create a user object for the session (exclude password)
     const sessionUser = {
       _id: user._id,
@@ -181,7 +180,7 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
     ).select('-password')
 
     const sessionUser = {
-      _id: updatedUser._id,
+      _id: updateUser._id,
       username: updateUser.username,
       email: updateUser.email,
       fullName: updateUser.fullName,

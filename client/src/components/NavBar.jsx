@@ -43,7 +43,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/api/auth/logout',{},{withCredentials:true});
+      await axios.post('https://atulniye-blogs.onrender.com/api/auth/logout',{},{withCredentials:true});
       setIsLoggedIn(false);
       setUser(null);
       setIsDropdownOpen(false);
@@ -155,7 +155,7 @@ export default function Navbar() {
                 >
                   {user?.profilePhoto ? (
                     <img
-                      src={`http://localhost:3000/api/auth/profile-photo/${user._id}`}
+                      src={`https://atulniye-blogs.onrender.com/auth/profile-photo/${user._id}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover border"
                       onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}

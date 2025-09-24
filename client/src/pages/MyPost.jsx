@@ -165,7 +165,7 @@ function MyPost() {
                 title={singleBlog.title}
                 description={singleBlog.description}
                 author={singleBlog.author}
-                thumbnail={singleBlog.thumbnail ? `http://localhost:3000/api/blog/thumbnail/${singleBlog._id}` : null}
+                thumbnail={singleBlog.thumbnail ? `https://atulniye-blogs.onrender.com/api/blog/thumbnail/${singleBlog._id}` : null}
                 showActions={true}
                 onDelete={toggleDelete}
                 onEdit={toggleEdit}

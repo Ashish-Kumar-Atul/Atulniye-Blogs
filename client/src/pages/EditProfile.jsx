@@ -149,7 +149,7 @@ function EditProfile() {
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile Photo</h3>
               <div className="flex items-center space-x-6">
                 <img
-                  src={profilePhotoPreview || (userData?.user?._id ? `http://localhost:3000/api/auth/profile-photo/${userData.user._id}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200")}
+                  src={profilePhotoPreview || (userData?.user?._id ? `https://atulniye-blogs.onrender.com/api/auth/profile-photo/${userData.user._id}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200")}
                   alt="Profile"
                   className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
                   onError={(e) => {

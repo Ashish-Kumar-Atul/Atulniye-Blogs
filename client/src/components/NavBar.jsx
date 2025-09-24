@@ -155,9 +155,9 @@ export default function Navbar() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
-                  {user?.profilePhoto ? (
+                  {/* Check for the user and that profilePhoto is true */}
+                  {user && user.profilePhoto ? (
                     <img
-                      // 4. Use the dynamic API_URL for the image
                       src={`${API_URL}/api/auth/profile-photo/${user._id}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover border dark:border-gray-700"

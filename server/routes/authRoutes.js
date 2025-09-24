@@ -111,7 +111,6 @@ router.get('/status', (req, res) => {
 //Update profile
 router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => {
   try {
-    // Check if user is authenticated
     if (!req.session.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
@@ -120,13 +119,12 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
 
     const {
       username,
-      fullName,
       email,
-      phone,
-      website,
+      fullName,
       bio,
-      twitter,
+      website,
       linkedin,
+      twitter,
       github,
       instagram
     } = req.body;
@@ -138,7 +136,7 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
     }
 
     if(username && username !== currentUser.username){
-      const existingUser = await User.findOne({username,_id: {$ne:userId} });
+      const existingUser = await User.findOne({username, _id: {$ne: userId} });
 
       if(existingUser){
         return res.status(409).json({message: 'Username Already Taken'});
@@ -146,7 +144,7 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
     }
     
     if(email && email !== currentUser.email){
-      const existingEmail = await User.findOne({email,_id: {$ne:req.session.userId} });
+      const existingEmail = await User.findOne({email, _id: {$ne: userId} });
 
       if(existingEmail){
         return res.status(409).json({message: 'Email Already Taken'});
@@ -154,23 +152,21 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
     }
 
     const updateData = {};
-
-    if(req.file) {
-        updateData.profilePhoto = {
-            data: req.file.buffer,
-            contentType: req.file.mimetype
-        };
-    }
     if(username) updateData.username = username;
-    if(fullName) updateData.fullName = fullName;
     if(email) updateData.email = email;
-    if(phone) updateData.phone = phone;
-    if(website) updateData.website = website;
+    if(fullName) updateData.fullName = fullName;
     if(bio) updateData.bio = bio;
-    if(twitter) updateData.twitter = twitter;
+    if(website) updateData.website = website;
     if(linkedin) updateData.linkedin = linkedin;
+    if(twitter) updateData.twitter = twitter;
     if(github) updateData.github = github;
     if(instagram) updateData.instagram = instagram;
+
+    if (req.file) {
+      // updateData.profilePhoto = true; // <-- REMOVE THIS LINE
+      updateData.profilePhotoData = req.file.buffer;
+      updateData.profilePhotoType = req.file.mimetype;
+    }
 
 
     const updateUser = await User.findByIdAndUpdate(
@@ -179,27 +175,28 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
       { new: true, runValidators: true }
     ).select('-password')
 
+    // Also update the session with the new user data
     const sessionUser = {
       _id: updateUser._id,
       username: updateUser.username,
       email: updateUser.email,
       fullName: updateUser.fullName,
-      profilePhoto: updateUser.profilePhoto
+      // The frontend should check for profilePhotoData, not profilePhoto
+      profilePhoto: !!updateUser.profilePhotoData 
     };
     req.session.user = sessionUser;
 
+
     res.status(200).json({
       message: 'Profile Updated Successfully',
-      user: updateUser
+      user: sessionUser
     });
 
   } catch (error) {
-    res.status(500).json({ 
-      message: 'Failed to update profile', 
-      error: error.message 
-    });
+    console.error('Update profile error:', error);
+    res.status(500).json({message: 'Server error during profile update'});
   }
-})
+});
 
 router.get('/profile-photo/:userId',async (req,res) => {
   try {

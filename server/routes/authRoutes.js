@@ -49,18 +49,18 @@ router.post('/login', async (req, res) => {
 });
 
 //If logged in or not
-// router.get('/status', async (req,res) => {
-//     if(req.session.userId){
-//         try {
-//             const user = await User.findById(req.session.userId).select('-password');
-//             res.status(200).json({user: user})
-//         } catch (error) {
-//             res.status(401).json({message:'Not authenticated'})
-//         }
-//     } else {
-//         res.status(401).json({message:'Not authenticated'})
-//     }
-// })
+router.get('/status', async (req,res) => {
+    if(req.session.userId){
+        try {
+            const user = await User.findById(req.session.userId).select('-password');
+            res.status(200).json({user: user})
+        } catch (error) {
+            res.status(401).json({message:'Not authenticated'})
+        }
+    } else {
+        res.status(401).json({message:'Not authenticated'})
+    }
+})
 
 //Update profile
 router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => {

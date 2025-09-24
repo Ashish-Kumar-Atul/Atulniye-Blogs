@@ -101,26 +101,23 @@ router.post("/login", async (req, res) => {
 });
 
 //If logged in or not
-router.get('/status', async (req,res) => {
-    if(req.session.userId){
-        try {
-            const user = await User.findById(req.session.userId).select('-password');
-            res.status(200).json({user: user})
-        } catch (error) {
-            res.status(401).json({message:'Not authenticated'})
-        }
+router.get('/status', (req, res) => {
+    if (req.session.user) {
+        res.status(200).json({ authenticated: true, user: req.session.user });
     } else {
-        res.status(401).json({message:'Not authenticated'})
+        res.status(401).json({ authenticated: false, message: 'Not authenticated' });
     }
-})
+});
 
 //Update profile
 router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => {
   try {
     // Check if user is authenticated
-    if (!req.session.userId) {
+    if (!req.session.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
+
+    const userId = req.session.user._id;
 
     const {
       username,
@@ -136,13 +133,13 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
     } = req.body;
 
 
-    const currentUser = await User.findById(req.session.userId);
+    const currentUser = await User.findById(userId);
     if(!currentUser){
       return res.status(404).json({message:'User not found'});
     }
 
     if(username && username !== currentUser.username){
-      const existingUser = await User.findOne({username,_id: {$ne:req.session.userId} });
+      const existingUser = await User.findOne({username,_id: {$ne:userId} });
 
       if(existingUser){
         return res.status(409).json({message: 'Username Already Taken'});
@@ -178,10 +175,19 @@ router.post('/update-profile',upload.single('profilePhoto'), async (req,res) => 
 
 
     const updateUser = await User.findByIdAndUpdate(
-      req.session.userId,
+      userId,
       updateData,
       { new: true, runValidators: true }
     ).select('-password')
+
+    const sessionUser = {
+      _id: updatedUser._id,
+      username: updateUser.username,
+      email: updateUser.email,
+      fullName: updateUser.fullName,
+      profilePhoto: updateUser.profilePhoto
+    };
+    req.session.user = sessionUser;
 
     res.status(200).json({
       message: 'Profile Updated Successfully',

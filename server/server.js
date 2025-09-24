@@ -13,7 +13,7 @@ app.set('trust proxy', 1);
 
 app.use(cors({
   origin: [
-    'https://lively-tapioca-1b9cae.netlify.app',
+    'https://atulniye-blogs.netlify.app/',
     'http://localhost:5173',
     'http://localhost:5174'
   ],

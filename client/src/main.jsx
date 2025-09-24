@@ -4,9 +4,8 @@ import App from './App.jsx';
 import { BrowserRouter, createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import './index.css';
 import axios from 'axios';
-
+import { UserProvider } from './context/UserContext.jsx';
 axios.defaults.withCredentials = true;
-
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import MainLayout from './layouts/MainLayout.jsx';
 import AuthLayout from './layouts/AuthLayout.jsx';
@@ -78,6 +77,8 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <UserProvider>
+      <RouterProvider router={router}/>
+    </UserProvider>
   </React.StrictMode>
 );
